@@ -513,7 +513,7 @@ interface PageDef {
 
 // ─── Main Component ────────────────────────────────────────────────────────────
 export default function ScrapbookAlbum() {
-  const { data, isAdmin, updateData } = useGift();
+  const { data, isAdmin, addPhoto, removePhoto } = useGift();
   const photos = data.photos;
   const bookRef = useRef<HTMLDivElement>(null);
 
@@ -636,19 +636,49 @@ export default function ScrapbookAlbum() {
     }
   });
 
+  // ── Compress + resize gambar sebelum disimpan (max 900px, JPEG 80%) ──────
+  const compressImage = useCallback((file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      const objectUrl = URL.createObjectURL(file);
+      img.onload = () => {
+        const MAX = 900;
+        let { width, height } = img;
+        if (width > MAX || height > MAX) {
+          if (width >= height) {
+            height = Math.round((height * MAX) / width);
+            width = MAX;
+          } else {
+            width = Math.round((width * MAX) / height);
+            height = MAX;
+          }
+        }
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) { reject(new Error("no canvas")); return; }
+        ctx.drawImage(img, 0, 0, width, height);
+        URL.revokeObjectURL(objectUrl);
+        resolve(canvas.toDataURL("image/jpeg", 0.80));
+      };
+      img.onerror = () => { URL.revokeObjectURL(objectUrl); reject(new Error("img load failed")); };
+      img.src = objectUrl;
+    });
+  }, []);
+
+  // ── Proses file upload: kompres lalu tambah satu per satu (atomic) ──────────
   const processFiles = useCallback(
     (files: FileList | File[]) => {
       if (!isAdmin) return;
       Array.from(files)
         .filter((f) => f.type.startsWith("image/"))
         .forEach((file) => {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            const dataUrl = e.target?.result as string;
-            if (dataUrl) {
+          compressImage(file)
+            .then((compressedUrl) => {
               const newPhoto: GalleryPhoto = {
                 id: `photo-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-                url: dataUrl,
+                url: compressedUrl,
                 caption: file.name.replace(/\.[^/.]+$/, "") || "Kenangan Manis",
                 date: new Date().toLocaleDateString("id-ID", {
                   day: "numeric",
@@ -656,13 +686,13 @@ export default function ScrapbookAlbum() {
                 }),
                 rotation: (Math.random() - 0.5) * 5,
               };
-              updateData({ photos: [newPhoto, ...data.photos] });
-            }
-          };
-          reader.readAsDataURL(file);
+              // atomic add — tidak terkena stale closure
+              addPhoto(newPhoto);
+            })
+            .catch((err) => console.error("Gagal memproses gambar:", err));
         });
     },
-    [isAdmin, data.photos, updateData]
+    [isAdmin, addPhoto, compressImage]
   );
 
   return (
@@ -736,10 +766,7 @@ export default function ScrapbookAlbum() {
                 </div>
                 {/* Tombol Delete */}
                 <button
-                  onClick={() => {
-                    const updated = photos.filter((p) => p.id !== photo.id);
-                    updateData({ photos: updated });
-                  }}
+                  onClick={() => removePhoto(photo.id)}
                   className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100 cursor-pointer z-10"
                   aria-label={`Hapus foto ${photo.caption}`}
                   title="Hapus foto ini"
