@@ -1,0 +1,288 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Dancing+Script:wght@500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,400;1,500&display=swap');
+@import "tailwindcss";
+
+/* ───────────────────────────────────────────────
+   PALETTE: Pink (dominan) + Green (aksen)
+   ─────────────────────────────────────────────── */
+:root {
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-handwriting: 'Caveat', 'Dancing Script', cursive;
+  --font-script: 'Dancing Script', cursive;
+
+  /* Pink */
+  --pink-50: #fff5f8;
+  --pink-100: #ffe8ef;
+  --pink-200: #fdd0df;
+  --pink-300: #f9a8c4;
+  --pink-400: #f472a0;
+  --pink-500: #ec4887;
+  --pink-600: #d62a6d;
+  --pink-700: #a81d55;
+
+  /* Green */
+  --green-50: #f1f8f3;
+  --green-100: #e0f0e4;
+  --green-200: #c4e3cb;
+  --green-300: #9fcfaa;
+  --green-400: #74b585;
+  --green-600: #3f8a57;
+  --green-800: #254f34;
+
+  /* Teks (kontras tinggi di latar terang) */
+  --text-main: #4a1830;   /* pink tua kecokelatan, untuk judul & body */
+  --text-soft: #8a4a66;   /* subjudul, menu */
+  --text-green: #2f6a45;  /* teks aksen hijau */
+
+  /* Alias lama supaya komponen yang sudah ada tidak rusak */
+  --scrapbook-cream: var(--pink-50);
+  --scrapbook-paper: #fffafc;
+  --scrapbook-kraft: var(--pink-100);
+  --scrapbook-pink: var(--pink-100);
+  --scrapbook-sage: var(--green-100);
+  --rose-accent: var(--pink-600);
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--pink-50);
+  background-image:
+    radial-gradient(var(--pink-200) 1.2px, transparent 1.2px),
+    linear-gradient(135deg, #fff5f8 0%, #ffe8ef 55%, #e8f4eb 100%);
+  background-size: 24px 24px, 100% 100%;
+  color: var(--text-main);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Scrapbook Typography */
+.font-serif-title { font-family: var(--font-serif); }
+.font-cursive { font-family: var(--font-handwriting); }
+.font-script { font-family: var(--font-script); }
+
+/* Scrapbook Paper Textures */
+.scrapbook-cover {
+  background: #fffafc;
+  border-radius: 28px;
+  box-shadow:
+    0 22px 50px -12px rgba(168, 29, 85, 0.18),
+    0 0 0 1px rgba(249, 168, 196, 0.5),
+    inset 0 0 50px rgba(255, 232, 239, 0.6);
+  position: relative;
+  color: var(--text-main);
+}
+
+.scrapbook-kraft {
+  background-color: var(--pink-100);
+  background-image: radial-gradient(rgba(214, 42, 109, 0.08) 1px, transparent 0);
+  background-size: 14px 14px;
+  box-shadow: 0 8px 24px -6px rgba(168, 29, 85, 0.14), inset 0 0 0 1px rgba(255, 255, 255, 0.7);
+}
+
+.lined-paper {
+  background-color: #fffafc;
+  background-image: repeating-linear-gradient(transparent,
+      transparent 27px,
+      rgba(249, 168, 196, 0.45) 28px);
+  line-height: 28px;
+}
+
+.grid-paper {
+  background-color: #fffafc;
+  background-image:
+    linear-gradient(rgba(249, 168, 196, 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(249, 168, 196, 0.3) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Washi Tape Styles */
+.washi-tape {
+  position: absolute;
+  height: 26px;
+  z-index: 25;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  opacity: 0.92;
+  backdrop-filter: blur(1px);
+}
+
+.washi-pink {
+  background: repeating-linear-gradient(-45deg,
+      rgba(249, 168, 196, 0.9),
+      rgba(249, 168, 196, 0.9) 8px,
+      rgba(253, 208, 223, 0.9) 8px,
+      rgba(253, 208, 223, 0.9) 16px);
+  border-left: 3px dashed rgba(214, 42, 109, 0.3);
+  border-right: 3px dashed rgba(214, 42, 109, 0.3);
+}
+
+.washi-sage {
+  background: repeating-linear-gradient(45deg,
+      rgba(159, 207, 170, 0.9),
+      rgba(159, 207, 170, 0.9) 8px,
+      rgba(196, 227, 203, 0.9) 8px,
+      rgba(196, 227, 203, 0.9) 16px);
+  border-left: 3px dashed rgba(37, 79, 52, 0.3);
+  border-right: 3px dashed rgba(37, 79, 52, 0.3);
+}
+
+/* Dulu kuning/emas → sekarang pink tua agar palet tetap pink + hijau */
+.washi-gold {
+  background: linear-gradient(135deg,
+      rgba(244, 114, 160, 0.9) 0%,
+      rgba(236, 72, 135, 0.8) 50%,
+      rgba(244, 114, 160, 0.9) 100%);
+  border-left: 3px dashed rgba(168, 29, 85, 0.3);
+  border-right: 3px dashed rgba(168, 29, 85, 0.3);
+}
+
+.washi-floral {
+  background-color: rgba(255, 232, 239, 0.95);
+  background-image: radial-gradient(rgba(236, 72, 135, 0.35) 15%, transparent 16%),
+    radial-gradient(rgba(63, 138, 87, 0.3) 15%, transparent 16%);
+  background-size: 14px 14px;
+  background-position: 0 0, 7px 7px;
+  border-left: 3px dashed rgba(214, 42, 109, 0.3);
+  border-right: 3px dashed rgba(214, 42, 109, 0.3);
+}
+
+/* Minimalist Polaroid Frame */
+.polaroid-frame {
+  background: #ffffff;
+  padding: 12px 12px 22px 12px;
+  box-shadow:
+    0 12px 28px -6px rgba(168, 29, 85, 0.15),
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.03);
+  border-radius: 4px;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.polaroid-frame:hover {
+  transform: translateY(-8px) scale(1.03) !important;
+  box-shadow:
+    0 22px 40px -8px rgba(236, 72, 135, 0.28),
+    0 6px 14px rgba(0, 0, 0, 0.06);
+  z-index: 25 !important;
+}
+
+/* Wax Seal Button (pink) */
+.wax-seal {
+  position: relative;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #f472a0 0%, #d62a6d 65%, #8f1848 100%);
+  box-shadow:
+    0 6px 16px rgba(214, 42, 109, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.2),
+    inset 0 2px 4px rgba(255, 255, 255, 0.4),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ec4887;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
+}
+
+.wax-seal:hover {
+  transform: scale(1.06);
+  box-shadow:
+    0 8px 20px rgba(214, 42, 109, 0.5),
+    0 3px 6px rgba(0, 0, 0, 0.25),
+    inset 0 2px 4px rgba(255, 255, 255, 0.5);
+}
+
+.wax-seal::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(255, 255, 255, 0.5);
+  pointer-events: none;
+}
+
+/* Postage Stamp */
+.postage-stamp {
+  position: relative;
+  background: #fffafc;
+  padding: 8px;
+  border: 1px solid var(--pink-200);
+  box-shadow: 0 4px 10px rgba(168, 29, 85, 0.08);
+}
+
+/* Glassmorphism Cards */
+.glass-pink {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(249, 168, 196, 0.6);
+  box-shadow: 0 10px 30px -10px rgba(214, 42, 109, 0.14), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+}
+
+.glass-sage {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(116, 181, 133, 0.5);
+  box-shadow: 0 10px 30px -10px rgba(37, 79, 52, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+}
+
+/* Sticky Note (dulu kuning → hijau mint) */
+.sticky-note {
+  background: var(--green-100);
+  box-shadow:
+    0 10px 20px -5px rgba(63, 138, 87, 0.2),
+    0 3px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  color: var(--green-800);
+}
+
+.sticky-note:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow:
+    0 16px 26px -6px rgba(63, 138, 87, 0.28),
+    0 6px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--pink-50); }
+::-webkit-scrollbar-thumb { background: var(--pink-300); border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: var(--pink-500); }
+
+/* 3D Flip Card Utilities */
+.perspective-1000 { perspective: 1000px; }
+.transform-style-3d { transform-style: preserve-3d; }
+.backface-hidden {
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+}
+.rotate-y-180 { transform: rotateY(180deg); }
+
+/* ── Scrapbook Book Styles ───────────────────────────── */
+.book-page-shadow {
+  box-shadow:
+    inset -6px 0 18px rgba(168, 29, 85, 0.07),
+    inset 6px 0 18px rgba(168, 29, 85, 0.07);
+}
+
+.page-lined {
+  background-color: #fffafc;
+  background-image: repeating-linear-gradient(transparent,
+      transparent 27px,
+      rgba(249, 168, 196, 0.4) 28px);
+}
+
+.page-grid {
+  background-color: var(--pink-50);
+  background-image:
+    linear-gradient(rgba(249, 168, 196, 0.25) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(249, 168, 196, 0.25) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ── Utility warna teks (pakai di komponen) ──────────── */
+.text-main { color: var(--text-main); }
+.text-soft { color: var(--text-soft); }
+.text-green-accent { color: var(--text-green); }
