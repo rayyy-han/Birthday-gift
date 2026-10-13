@@ -1,7 +1,10 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { BirthdayGiftConfig, INITIAL_GIFT_DATA } from "@/data/giftData";
+import { BirthdayGiftConfig, GalleryPhoto, INITIAL_GIFT_DATA } from "@/data/giftData";
+
+// Kunci localStorage untuk foto yang diupload user
+const PHOTOS_STORAGE_KEY = "birthday_gift_photos_v1";
 
 interface GiftContextType {
   data: BirthdayGiftConfig;
@@ -17,12 +20,42 @@ const GiftContext = createContext<GiftContextType | undefined>(undefined);
 export function GiftProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<BirthdayGiftConfig>(INITIAL_GIFT_DATA);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [photosLoaded, setPhotosLoaded] = useState(false);
 
-  // 1. Integrasi Langsung: Setiap kali INITIAL_GIFT_DATA di giftData.ts diubah,
-  // langsung sinkronkan ke state sehingga tampilan HTML langsung berubah otomatis!
+  // 1. Load foto yang tersimpan dari localStorage saat pertama kali mount
+  useEffect(() => {
+    try {
+      const savedPhotos = localStorage.getItem(PHOTOS_STORAGE_KEY);
+      if (savedPhotos) {
+        const parsedPhotos: GalleryPhoto[] = JSON.parse(savedPhotos);
+        if (Array.isArray(parsedPhotos) && parsedPhotos.length > 0) {
+          setData((prev) => ({ ...prev, photos: parsedPhotos }));
+        }
+      }
+    } catch (e) {
+      console.error("Failed to load saved photos:", e);
+    }
+    setPhotosLoaded(true);
+  }, []);
+
+  // 2. Simpan foto ke localStorage setiap kali data.photos berubah (setelah initial load)
+  useEffect(() => {
+    if (!photosLoaded) return;
+    try {
+      // Simpan semua foto (termasuk yang base64) ke localStorage
+      localStorage.setItem(PHOTOS_STORAGE_KEY, JSON.stringify(data.photos));
+    } catch (e) {
+      // localStorage mungkin penuh (base64 foto besar)
+      console.warn("Failed to save photos to localStorage:", e);
+    }
+  }, [data.photos, photosLoaded]);
+
+  // 3. Sinkronkan perubahan di INITIAL_GIFT_DATA (teks, nama, dll) tapi JAGA foto yang sudah disimpan
   useEffect(() => {
     setData((prev) => ({
       ...INITIAL_GIFT_DATA,
+      // Pertahankan foto yang sudah ditambah user (tidak di-reset oleh perubahan giftData.ts)
+      photos: prev.photos,
       customMusicName: prev.customMusicName || INITIAL_GIFT_DATA.customMusicName,
       customMusicData: prev.customMusicData || INITIAL_GIFT_DATA.customMusicData,
     }));
@@ -36,32 +69,9 @@ export function GiftProvider({ children }: { children: React.ReactNode }) {
     INITIAL_GIFT_DATA.trollOption2,
     INITIAL_GIFT_DATA.trollSubtitle,
     INITIAL_GIFT_DATA.loveLetter,
-    INITIAL_GIFT_DATA.photos,
     INITIAL_GIFT_DATA.reasons,
     INITIAL_GIFT_DATA.wishes,
   ]);
-
-  // 2. Bersihkan cache localStorage lama yang menimpa teks data,
-  // namun tetap pertahankan custom audio jika ada yang diupload pengguna.
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem("birthday_gift_config_v3");
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed.customMusicData) {
-          setData((prev) => ({
-            ...prev,
-            customMusicName: parsed.customMusicName,
-            customMusicData: parsed.customMusicData,
-          }));
-        }
-        // Hapus cache teks agar perubahan di file giftData.ts selalu langsung tampil
-        localStorage.removeItem("birthday_gift_config_v3");
-      }
-    } catch (e) {
-      console.error("Failed to load gift config:", e);
-    }
-  }, []);
 
   const updateData = (newData: Partial<BirthdayGiftConfig>) => {
     setData((prev) => ({
@@ -72,6 +82,7 @@ export function GiftProvider({ children }: { children: React.ReactNode }) {
 
   const resetData = () => {
     try {
+      localStorage.removeItem(PHOTOS_STORAGE_KEY);
       localStorage.removeItem("birthday_gift_config_v3");
     } catch (e) {
       console.error("Failed to reset gift config:", e);
