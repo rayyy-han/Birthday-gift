@@ -153,12 +153,12 @@ export default function SecretLoveLetter() {
                 </div>
               ) : (
                 <div>
-                  <div className="font-cursive text-base sm:text-2xl text-slate-900 leading-relaxed whitespace-pre-line p-1 sm:p-2">
+                  <div className="font-cursive text-base sm:text-lg text-slate-900 leading-loose whitespace-pre-line p-1 sm:p-2">
                     {data.loveLetter}
                   </div>
 
                   <div className="mt-8 pt-4 border-t border-amber-200 flex items-center justify-between text-xs font-medium text-slate-500">
-                    <span className="font-cursive text-base sm:text-xl text-rose-600">
+                    <span className="font-cursive text-sm sm:text-base text-rose-600">
                       Tertanda dengan penuh cinta 🤍
                     </span>
                     <span className="bg-rose-50 px-3 py-1 rounded-full border border-rose-200 text-rose-700">
