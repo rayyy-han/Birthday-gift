@@ -789,8 +789,8 @@ export default function ScrapbookAlbum() {
           transition={{ duration: 0.75, ease: "easeOut" }}
           className="relative"
           style={{
-            width: "min(380px, 90vw)",
-            height: "min(520px, 126vw)",
+            width: "min(360px, 94vw)",
+            height: "min(500px, 130vw)",
             perspective: "1500px",
           }}
           ref={bookRef}
