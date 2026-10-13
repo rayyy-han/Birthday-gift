@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { BirthdayGiftConfig, GalleryPhoto, INITIAL_GIFT_DATA } from "@/data/giftData";
-import { supabase } from "@/lib/supabase";
+import { supabase, isSupabaseReady } from "@/lib/supabase";
 
 // Nama table di Supabase
 const SUPABASE_TABLE = "birthday_photos";
@@ -19,16 +19,10 @@ interface GiftContextType {
   resetData: () => void;
   toggleAdminPasscode: (pass: string) => boolean;
   photosLoading: boolean;
+  isSupabaseReady: boolean;
 }
 
 const GiftContext = createContext<GiftContextType | undefined>(undefined);
-
-// ── Cek apakah Supabase tersedia ──────────────────────────────────────────────
-const isSupabaseConfigured =
-  typeof process.env.NEXT_PUBLIC_SUPABASE_URL === "string" &&
-  process.env.NEXT_PUBLIC_SUPABASE_URL.includes("supabase.co") &&
-  typeof process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === "string" &&
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.length > 10;
 
 export function GiftProvider({ children }: { children: React.ReactNode }) {
   const [data, setData] = useState<BirthdayGiftConfig>(INITIAL_GIFT_DATA);
@@ -37,9 +31,11 @@ export function GiftProvider({ children }: { children: React.ReactNode }) {
 
   // ── Load foto dari Supabase atau localStorage saat mount ──────────────────
   useEffect(() => {
+    let isMounted = true;
+
     const loadPhotos = async () => {
       try {
-        if (isSupabaseConfigured) {
+        if (isSupabaseReady && supabase) {
           // Ambil dari Supabase
           const { data: rows, error } = await supabase
             .from(SUPABASE_TABLE)
@@ -55,20 +51,24 @@ export function GiftProvider({ children }: { children: React.ReactNode }) {
               location: row.location || "",
               rotation: row.rotation || 0,
             }));
-            setData((prev) => ({ ...prev, photos }));
+            if (isMounted) {
+              setData((prev) => ({ ...prev, photos }));
+            }
+            try {
+              localStorage.setItem(PHOTOS_STORAGE_KEY, JSON.stringify(photos));
+            } catch {}
+            return;
           } else if (error) {
-            console.warn("Supabase error, fallback ke localStorage:", error.message);
-            loadFromLocalStorage();
+            console.warn("Supabase query error, fallback ke localStorage:", error.message);
           }
-        } else {
-          // Fallback ke localStorage
-          loadFromLocalStorage();
         }
+        // Fallback ke localStorage
+        loadFromLocalStorage();
       } catch (e) {
         console.error("Failed to load photos:", e);
         loadFromLocalStorage();
       } finally {
-        setPhotosLoading(false);
+        if (isMounted) setPhotosLoading(false);
       }
     };
 
@@ -77,7 +77,7 @@ export function GiftProvider({ children }: { children: React.ReactNode }) {
         const saved = localStorage.getItem(PHOTOS_STORAGE_KEY);
         if (saved) {
           const parsed: GalleryPhoto[] = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 0) {
+          if (Array.isArray(parsed) && parsed.length > 0 && isMounted) {
             setData((prev) => ({ ...prev, photos: parsed }));
           }
         }
@@ -87,6 +87,10 @@ export function GiftProvider({ children }: { children: React.ReactNode }) {
     };
 
     loadPhotos();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // ── Sinkronkan data teks dari INITIAL_GIFT_DATA tanpa mereset foto ────────
@@ -109,13 +113,20 @@ export function GiftProvider({ children }: { children: React.ReactNode }) {
     setData((prev) => ({ ...prev, ...newData }));
   };
 
-  // ── Tambah foto (atomic + simpan ke Supabase/localStorage) ───────────────
+  // ── Tambah foto (atomic + simpan ke Supabase & localStorage) ───────────────
   const addPhoto = async (photo: GalleryPhoto) => {
-    // Langsung update UI (optimistic)
-    setData((prev) => ({ ...prev, photos: [photo, ...prev.photos] }));
+    // Optimistic UI update + simpan ke localStorage
+    setData((prev) => {
+      const nextPhotos = [photo, ...prev.photos];
+      try {
+        localStorage.setItem(PHOTOS_STORAGE_KEY, JSON.stringify(nextPhotos));
+      } catch {}
+      return { ...prev, photos: nextPhotos };
+    });
 
-    try {
-      if (isSupabaseConfigured) {
+    // Simpan ke Supabase jika aktif
+    if (isSupabaseReady && supabase) {
+      try {
         const { error } = await supabase.from(SUPABASE_TABLE).insert({
           id: photo.id,
           url: photo.url,
@@ -125,50 +136,35 @@ export function GiftProvider({ children }: { children: React.ReactNode }) {
           rotation: photo.rotation || 0,
         });
         if (error) {
-          console.warn("Supabase insert error, fallback ke localStorage:", error.message);
-          saveToLocalStorage();
+          console.warn("Supabase insert error:", error.message);
         }
-      } else {
-        saveToLocalStorage();
+      } catch (e) {
+        console.error("Failed to save photo to Supabase:", e);
       }
-    } catch (e) {
-      console.error("Failed to save photo:", e);
-      saveToLocalStorage();
     }
   };
 
-  // ── Hapus foto (atomic + hapus dari Supabase/localStorage) ───────────────
+  // ── Hapus foto (atomic + hapus dari Supabase & localStorage) ───────────────
   const removePhoto = async (id: string) => {
-    // Langsung update UI (optimistic)
-    setData((prev) => ({ ...prev, photos: prev.photos.filter((p) => p.id !== id) }));
+    // Optimistic UI update + simpan ke localStorage
+    setData((prev) => {
+      const nextPhotos = prev.photos.filter((p) => p.id !== id);
+      try {
+        localStorage.setItem(PHOTOS_STORAGE_KEY, JSON.stringify(nextPhotos));
+      } catch {}
+      return { ...prev, photos: nextPhotos };
+    });
 
-    try {
-      if (isSupabaseConfigured) {
+    // Hapus dari Supabase jika aktif
+    if (isSupabaseReady && supabase) {
+      try {
         const { error } = await supabase.from(SUPABASE_TABLE).delete().eq("id", id);
         if (error) {
           console.warn("Supabase delete error:", error.message);
-          saveToLocalStorage();
         }
-      } else {
-        saveToLocalStorage();
+      } catch (e) {
+        console.error("Failed to delete photo from Supabase:", e);
       }
-    } catch (e) {
-      console.error("Failed to delete photo:", e);
-      saveToLocalStorage();
-    }
-  };
-
-  // ── Helper simpan ke localStorage ────────────────────────────────────────
-  const saveToLocalStorage = () => {
-    try {
-      setData((prev) => {
-        try {
-          localStorage.setItem(PHOTOS_STORAGE_KEY, JSON.stringify(prev.photos));
-        } catch {}
-        return prev;
-      });
-    } catch (e) {
-      console.warn("localStorage write failed:", e);
     }
   };
 
@@ -190,9 +186,16 @@ export function GiftProvider({ children }: { children: React.ReactNode }) {
   return (
     <GiftContext.Provider
       value={{
-        data, isAdmin, setIsAdmin, updateData,
-        addPhoto, removePhoto, resetData,
-        toggleAdminPasscode, photosLoading,
+        data,
+        isAdmin,
+        setIsAdmin,
+        updateData,
+        addPhoto,
+        removePhoto,
+        resetData,
+        toggleAdminPasscode,
+        photosLoading,
+        isSupabaseReady,
       }}
     >
       {children}
