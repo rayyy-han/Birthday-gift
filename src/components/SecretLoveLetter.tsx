@@ -86,7 +86,7 @@ export default function SecretLoveLetter() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 25, scale: 0.95 }}
               transition={{ duration: 0.4 }}
-              className="w-full max-w-2xl lined-paper p-6 sm:p-10 rounded-3xl shadow-2xl border-2 border-amber-200/90 relative text-left"
+              className="w-full max-w-2xl lined-paper p-4 sm:p-10 rounded-3xl shadow-2xl border-2 border-amber-200/90 relative text-left"
             >
               {/* Paperclip in corner */}
               <div className="absolute -top-3 left-8 z-30 pointer-events-none">
@@ -153,12 +153,12 @@ export default function SecretLoveLetter() {
                 </div>
               ) : (
                 <div>
-                  <div className="font-cursive text-2xl sm:text-3xl text-slate-900 leading-relaxed whitespace-pre-line p-2">
+                  <div className="font-cursive text-base sm:text-2xl text-slate-900 leading-relaxed whitespace-pre-line p-1 sm:p-2">
                     {data.loveLetter}
                   </div>
 
                   <div className="mt-8 pt-4 border-t border-amber-200 flex items-center justify-between text-xs font-medium text-slate-500">
-                    <span className="font-cursive text-xl text-rose-600">
+                    <span className="font-cursive text-base sm:text-xl text-rose-600">
                       Tertanda dengan penuh cinta 🤍
                     </span>
                     <span className="bg-rose-50 px-3 py-1 rounded-full border border-rose-200 text-rose-700">

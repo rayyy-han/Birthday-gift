@@ -84,7 +84,13 @@ body {
   background-image: repeating-linear-gradient(transparent,
       transparent 27px,
       rgba(249, 168, 196, 0.45) 28px);
-  line-height: 28px;
+  line-height: 1.75rem;
+}
+
+@media (min-width: 640px) {
+  .lined-paper {
+    line-height: 28px;
+  }
 }
 
 .grid-paper {

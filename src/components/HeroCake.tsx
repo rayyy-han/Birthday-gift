@@ -122,7 +122,7 @@ export default function HeroCake() {
         {/* Title */}
         <h1 className="text-4xl sm:text-6xl md:text-7xl font-serif-title font-medium tracking-tight text-[#4a1830] leading-tight">
           {data.heroGreeting}{" "}
-          <span className="font-cursive text-5xl sm:text-7xl md:text-8xl bg-gradient-to-r from-pink-600 via-pink-500 to-rose-500 bg-clip-text text-transparent italic block sm:inline mt-1 sm:mt-0 font-bold">
+          <span className="font-cursive text-4xl sm:text-5xl md:text-7xl lg:text-8xl bg-gradient-to-r from-pink-600 via-pink-500 to-rose-500 bg-clip-text text-transparent italic block sm:inline mt-1 sm:mt-0 font-bold">
             {data.partnerName}
           </span>
         </h1>
@@ -313,7 +313,7 @@ export default function HeroCake() {
               </h3>
 
               <div className="lined-paper p-5 my-4 rounded-xl border border-pink-200/80 text-left shadow-sm">
-                <p className="font-cursive text-2xl text-[#4a1830] leading-relaxed">
+                <p className="font-cursive text-lg sm:text-2xl text-[#4a1830] leading-relaxed">
                   "Semoga usiamu yang baru diliputi keberkahan tiada henti, kesehatan yang prima, kebahagiaan sejati,
                   dan kemudahan di setiap langkah impianmu. Aku selalu ada untukmu."
                 </p>

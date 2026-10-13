@@ -428,7 +428,7 @@ export default function ReasonsLoveGrid() {
 
                   {/* Highlight Quote */}
                   <div className="text-center my-auto py-2 relative z-10 px-2">
-                    <p className="font-cursive text-2xl sm:text-3xl text-emerald-900 leading-snug font-medium drop-shadow-sm">
+                    <p className="font-cursive text-sm sm:text-xl text-emerald-900 leading-snug font-medium drop-shadow-sm">
                       &ldquo;{item.highlight}&rdquo;
                     </p>
                   </div>

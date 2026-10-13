@@ -187,7 +187,7 @@ export default function WishWall() {
                   <Heart size={14} className="text-rose-400 fill-rose-300" />
                 </div>
 
-                <p className={`font-cursive text-2xl ${color.text} leading-snug mt-2`}>
+                <p className={`font-cursive text-base sm:text-xl ${color.text} leading-snug mt-2`}>
                   &ldquo;{note.message}&rdquo;
                 </p>
               </div>
