@@ -10,6 +10,7 @@ import {
   Plus,
   Camera,
   RotateCcw,
+  X,
 } from "lucide-react";
 import { useGift } from "@/context/GiftContext";
 import { GalleryPhoto } from "@/data/giftData";
@@ -711,6 +712,46 @@ export default function ScrapbookAlbum() {
           </button>
         </div>
       )}
+
+      {/* ── Admin Photo Manager — Daftar foto dengan tombol delete ── */}
+      {isAdmin && photos.length > 0 && (
+        <div className="max-w-2xl mx-auto mb-8 px-2">
+          <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3 text-center">
+            📷 Kelola Foto — Klik ✕ untuk hapus
+          </p>
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+            {photos.map((photo) => (
+              <div key={photo.id} className="relative group rounded-xl overflow-hidden shadow-md border-2 border-white aspect-square">
+                {/* Thumbnail */}
+                <img
+                  src={photo.url}
+                  alt={photo.caption}
+                  className="w-full h-full object-cover"
+                />
+                {/* Overlay gelap saat hover */}
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl" />
+                {/* Caption */}
+                <div className="absolute bottom-0 inset-x-0 px-1.5 py-1 bg-gradient-to-t from-black/60 to-transparent">
+                  <p className="text-white text-[9px] font-medium truncate">{photo.caption}</p>
+                </div>
+                {/* Tombol Delete */}
+                <button
+                  onClick={() => {
+                    const updated = photos.filter((p) => p.id !== photo.id);
+                    updateData({ photos: updated });
+                  }}
+                  className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100 cursor-pointer z-10"
+                  aria-label={`Hapus foto ${photo.caption}`}
+                  title="Hapus foto ini"
+                >
+                  <X size={12} />
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
 
       {/* ── THE BOOK ────────────────────────────────────── */}
       <div className="flex flex-col items-center gap-6 select-none">
