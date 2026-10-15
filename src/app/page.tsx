@@ -277,8 +277,7 @@ export default function IntroCountdownTrollPage() {
 
             {/* Subtitle */}
             <p className="text-xs sm:text-sm text-slate-600 font-light mb-6 max-w-xs leading-relaxed">
-              Sebuah kejutan manis sedang dipersiapkan dengan penuh kasih... Kado
-              ini baru bisa dibuka saat waktunya tiba ya! 💕
+              Sebuah Hal sederhana yang buat dengan sepenuh hati menunggumu! 💕
             </p>
 
             {/* ── Countdown Grid: 4 Boxes ──────────────────────────────────── */}
