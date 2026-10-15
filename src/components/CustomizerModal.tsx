@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Check, Heart, User, Calendar, RotateCcw } from "lucide-react";
+import { X, Check, Heart, User, Calendar, RotateCcw, Clock } from "lucide-react";
 import { useGift } from "@/context/GiftContext";
 import { INITIAL_GIFT_DATA } from "@/data/giftData";
 
@@ -19,6 +19,7 @@ export default function CustomizerModal({ isOpen, onClose }: CustomizerModalProp
   const [trollTitle, setTrollTitle] = useState(data.trollTitle || INITIAL_GIFT_DATA.trollTitle);
   const [trollOption1, setTrollOption1] = useState(data.trollOption1 || INITIAL_GIFT_DATA.trollOption1);
   const [trollOption2, setTrollOption2] = useState(data.trollOption2 || INITIAL_GIFT_DATA.trollOption2);
+  const [countdownTarget, setCountdownTarget] = useState(data.countdownTarget || INITIAL_GIFT_DATA.countdownTarget || "2026-10-17T00:00:00");
 
   // Selalu perbarui input form dengan data database terkini saat modal dibuka
   useEffect(() => {
@@ -29,6 +30,7 @@ export default function CustomizerModal({ isOpen, onClose }: CustomizerModalProp
       setTrollTitle(data.trollTitle || INITIAL_GIFT_DATA.trollTitle);
       setTrollOption1(data.trollOption1 || INITIAL_GIFT_DATA.trollOption1);
       setTrollOption2(data.trollOption2 || INITIAL_GIFT_DATA.trollOption2);
+      setCountdownTarget(data.countdownTarget || INITIAL_GIFT_DATA.countdownTarget || "2026-10-17T00:00:00");
     }
   }, [isOpen, data]);
 
@@ -41,6 +43,7 @@ export default function CustomizerModal({ isOpen, onClose }: CustomizerModalProp
       trollTitle: trollTitle.trim() || INITIAL_GIFT_DATA.trollTitle,
       trollOption1: trollOption1.trim() || INITIAL_GIFT_DATA.trollOption1,
       trollOption2: trollOption2.trim() || INITIAL_GIFT_DATA.trollOption2,
+      countdownTarget: countdownTarget || "2026-10-17T00:00:00",
     });
     onClose();
   };
@@ -102,15 +105,30 @@ export default function CustomizerModal({ isOpen, onClose }: CustomizerModalProp
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
-                <Calendar size={13} className="text-rose-500" /> Tanggal Spesial:
+                <Calendar size={13} className="text-rose-500" /> Tanggal Spesial (Teks):
               </label>
               <input
                 type="text"
                 value={birthdayDate}
                 onChange={(e) => setBirthdayDate(e.target.value)}
-                placeholder="Misal: 9 Oktober"
+                placeholder="Misal: 17 Oktober"
                 className="w-full p-2.5 rounded-xl border border-rose-200 bg-white/90 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-rose-400"
               />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1 flex items-center gap-1">
+                <Clock size={13} className="text-rose-500" /> Target Waktu Countdown Buka Kado:
+              </label>
+              <input
+                type="datetime-local"
+                value={countdownTarget}
+                onChange={(e) => setCountdownTarget(e.target.value)}
+                className="w-full p-2.5 rounded-xl border border-rose-200 bg-white/90 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-rose-400"
+              />
+              <p className="text-[11px] text-slate-500 mt-1">
+                Sebelum tanggal &amp; jam ini, halaman kado akan terkunci dan menampilkan hitung mundur.
+              </p>
             </div>
 
             <div>

@@ -37,11 +37,13 @@ export interface BirthdayGiftConfig {
   trollOption1: string;
   trollOption2: string;
   trollSubtitle?: string;
+  countdownTarget?: string; // Target waktu countdown dalam format ISO YYYY-MM-DDTHH:mm:ss
 }
 
 export const INITIAL_GIFT_DATA: BirthdayGiftConfig = {
   partnerName: "Keiko",
   birthdayDate: "17 Oktober",
+  countdownTarget: "2026-10-17T00:00:00",
   heroGreeting: "Selamat Ulang Tahun",
   heroSubtext:
     "Sebuah hal kecil yang dibuat khusus untuk merayakan hari istimewamu, dan menyampaikan doa terbaik.",
