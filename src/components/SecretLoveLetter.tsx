@@ -27,7 +27,7 @@ export default function SecretLoveLetter() {
           Surat Hati Untuk {data.partnerName}
         </h2>
         <p className="text-sm sm:text-base text-slate-500 mt-2 max-w-md mx-auto font-light">
-          Pecahkan cap lilin (wax seal) pada amplop di bawah ini untuk membaca surat khusus yang tersimpan rapi.
+          Pincittt tengahh nyaa Kumaa cantekkkk!!!.
         </p>
       </div>
 
