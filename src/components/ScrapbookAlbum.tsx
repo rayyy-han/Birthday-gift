@@ -531,6 +531,7 @@ export default function ScrapbookAlbum() {
   // Modal Supabase Guide
   const [showSupabaseGuide, setShowSupabaseGuide] = useState(false);
   const [copiedSql, setCopiedSql] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<string | null>(null);
 
   // ── Pages Model ──────────────────────────────────────────────────────────────
   const contentFaceCount = Math.max(1, Math.ceil(photos.length / PHOTOS_PER_PAGE));
@@ -696,32 +697,48 @@ export default function ScrapbookAlbum() {
   }, []);
 
   const processFiles = useCallback(
-    (files: FileList | File[]) => {
+    async (files: FileList | File[]) => {
       if (!isAdmin) return;
-      Array.from(files)
-        .filter((f) => f.type.startsWith("image/"))
-        .forEach((file) => {
-          compressImage(file)
-            .then((compressedUrl) => {
-              const newPhoto: GalleryPhoto = {
-                id: `photo-${Date.now()}-${Math.random()
-                  .toString(36)
-                  .substr(2, 5)}`,
-                url: compressedUrl,
-                caption:
-                  file.name.replace(/\.[^/.]+$/, "") || "Kenangan Manis",
-                date: new Date().toLocaleDateString("id-ID", {
-                  day: "numeric",
-                  month: "short",
-                }),
-                rotation: (Math.random() - 0.5) * 5,
-              };
-              addPhoto(newPhoto);
-            })
-            .catch((err) => console.error("Gagal memproses gambar:", err));
-        });
+      const validFiles = Array.from(files).filter((f) =>
+        f.type.startsWith("image/")
+      );
+      if (validFiles.length === 0) return;
+
+      setUploadStatus("Sedang memproses & mengunggah foto...");
+      try {
+        let successCount = 0;
+        for (const file of validFiles) {
+          const compressedUrl = await compressImage(file);
+          const newPhoto: GalleryPhoto = {
+            id: `photo-${Date.now()}-${Math.random()
+              .toString(36)
+              .substr(2, 5)}`,
+            url: compressedUrl,
+            caption:
+              file.name.replace(/\.[^/.]+$/, "") || "Kenangan Manis",
+            date: new Date().toLocaleDateString("id-ID", {
+              day: "numeric",
+              month: "short",
+            }),
+            rotation: (Math.random() - 0.5) * 5,
+          };
+          const ok = await addPhoto(newPhoto);
+          if (ok) successCount++;
+        }
+
+        if (isSupabaseReady) {
+          setUploadStatus("✓ Foto berhasil disimpan permanen ke Database Cloud Supabase!");
+        } else {
+          setUploadStatus("✓ Foto tersimpan di browser ini (Mode Lokal).");
+        }
+      } catch (err) {
+        console.error("Gagal memproses gambar:", err);
+        setUploadStatus("Gagal memproses gambar. Coba format gambar lain.");
+      } finally {
+        setTimeout(() => setUploadStatus(null), 4000);
+      }
     },
-    [isAdmin, addPhoto, compressImage]
+    [isAdmin, addPhoto, compressImage, isSupabaseReady]
   );
 
   const supabaseSql = `-- Jalankan query ini di SQL Editor Supabase Anda:
@@ -826,6 +843,14 @@ create policy "Public delete" on birthday_photos for delete using (true);`;
               </span>
             )}
           </div>
+
+          {/* Upload Status Feedback Banner */}
+          {uploadStatus && (
+            <div className="mt-2 text-xs font-semibold px-4 py-1.5 rounded-full bg-rose-600 text-white shadow-md flex items-center gap-2 animate-bounce">
+              <Sparkles size={13} />
+              {uploadStatus}
+            </div>
+          )}
         </div>
       )}
 

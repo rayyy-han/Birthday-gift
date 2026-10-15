@@ -21,7 +21,7 @@ import { useGift } from "@/context/GiftContext";
 import { GalleryPhoto } from "@/data/giftData";
 
 export default function PhotoScrapbook() {
-  const { data, isAdmin, updateData } = useGift();
+  const { data, isAdmin, updateData, addPhoto, removePhoto } = useGift();
   const [isDraggingOver, setIsDraggingOver] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState<GalleryPhoto | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -54,8 +54,7 @@ export default function PhotoScrapbook() {
             rotation: (Math.random() - 0.5) * 6,
           };
 
-          const updated = [newPhoto, ...data.photos];
-          updateData({ photos: updated });
+          addPhoto(newPhoto);
         }
       };
       reader.readAsDataURL(file);
@@ -96,8 +95,7 @@ export default function PhotoScrapbook() {
   const handleDeletePhoto = (id: string) => {
     if (!isAdmin) return;
     if (confirm("Hapus foto ini dari scrapbook?")) {
-      const updated = data.photos.filter((p) => p.id !== id);
-      updateData({ photos: updated });
+      removePhoto(id);
     }
   };
 

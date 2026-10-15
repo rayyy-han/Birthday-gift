@@ -14,7 +14,7 @@ interface GiftContextType {
   isAdmin: boolean;
   setIsAdmin: (val: boolean) => void;
   updateData: (newData: Partial<BirthdayGiftConfig>) => void;
-  addPhoto: (photo: GalleryPhoto) => Promise<void>;
+  addPhoto: (photo: GalleryPhoto) => Promise<boolean>;
   removePhoto: (id: string) => Promise<void>;
   resetData: () => void;
   toggleAdminPasscode: (pass: string) => boolean;
@@ -42,8 +42,8 @@ export function GiftProvider({ children }: { children: React.ReactNode }) {
             .select("*")
             .order("created_at", { ascending: false });
 
-          if (!error && rows && rows.length > 0) {
-            const photos: GalleryPhoto[] = rows.map((row) => ({
+          if (!error && rows) {
+            const supabasePhotos: GalleryPhoto[] = rows.map((row) => ({
               id: row.id,
               url: row.url,
               caption: row.caption || "Kenangan Manis",
@@ -51,11 +51,19 @@ export function GiftProvider({ children }: { children: React.ReactNode }) {
               location: row.location || "",
               rotation: row.rotation || 0,
             }));
+
+            // Gabungkan foto Supabase dengan foto bawaan di giftData.ts
+            const dbIds = new Set(supabasePhotos.map((p) => p.id));
+            const merged = [
+              ...supabasePhotos,
+              ...INITIAL_GIFT_DATA.photos.filter((p) => !dbIds.has(p.id)),
+            ];
+
             if (isMounted) {
-              setData((prev) => ({ ...prev, photos }));
+              setData((prev) => ({ ...prev, photos: merged }));
             }
             try {
-              localStorage.setItem(PHOTOS_STORAGE_KEY, JSON.stringify(photos));
+              localStorage.setItem(PHOTOS_STORAGE_KEY, JSON.stringify(merged));
             } catch {}
             return;
           } else if (error) {
@@ -78,7 +86,12 @@ export function GiftProvider({ children }: { children: React.ReactNode }) {
         if (saved) {
           const parsed: GalleryPhoto[] = JSON.parse(saved);
           if (Array.isArray(parsed) && parsed.length > 0 && isMounted) {
-            setData((prev) => ({ ...prev, photos: parsed }));
+            const savedIds = new Set(parsed.map((p) => p.id));
+            const merged = [
+              ...parsed,
+              ...INITIAL_GIFT_DATA.photos.filter((p) => !savedIds.has(p.id)),
+            ];
+            setData((prev) => ({ ...prev, photos: merged }));
           }
         }
       } catch (e) {
@@ -114,15 +127,8 @@ export function GiftProvider({ children }: { children: React.ReactNode }) {
   };
 
   // ── Tambah foto (atomic + simpan ke Supabase & localStorage) ───────────────
-  const addPhoto = async (photo: GalleryPhoto) => {
-    // Optimistic UI update + simpan ke localStorage
-    setData((prev) => {
-      const nextPhotos = [photo, ...prev.photos];
-      try {
-        localStorage.setItem(PHOTOS_STORAGE_KEY, JSON.stringify(nextPhotos));
-      } catch {}
-      return { ...prev, photos: nextPhotos };
-    });
+  const addPhoto = async (photo: GalleryPhoto): Promise<boolean> => {
+    let supabaseSuccess = false;
 
     // Simpan ke Supabase jika aktif
     if (isSupabaseReady && supabase) {
@@ -136,12 +142,25 @@ export function GiftProvider({ children }: { children: React.ReactNode }) {
           rotation: photo.rotation || 0,
         });
         if (error) {
-          console.warn("Supabase insert error:", error.message);
+          console.error("Supabase insert error:", error.message);
+        } else {
+          supabaseSuccess = true;
         }
       } catch (e) {
         console.error("Failed to save photo to Supabase:", e);
       }
     }
+
+    // Update state dan simpan ke localStorage
+    setData((prev) => {
+      const nextPhotos = [photo, ...prev.photos];
+      try {
+        localStorage.setItem(PHOTOS_STORAGE_KEY, JSON.stringify(nextPhotos));
+      } catch {}
+      return { ...prev, photos: nextPhotos };
+    });
+
+    return supabaseSuccess;
   };
 
   // ── Hapus foto (atomic + hapus dari Supabase & localStorage) ───────────────
