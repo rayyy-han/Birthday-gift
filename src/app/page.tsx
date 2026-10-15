@@ -172,11 +172,10 @@ export default function IntroCountdownTrollPage() {
         {isAdmin && (
           <button
             onClick={() => setAdminBypass((prev) => !prev)}
-            className={`px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer ${
-              adminBypass
-                ? "bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200"
-                : "bg-emerald-100 text-emerald-900 border border-emerald-300 hover:bg-emerald-200"
-            }`}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer ${adminBypass
+              ? "bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200"
+              : "bg-emerald-100 text-emerald-900 border border-emerald-300 hover:bg-emerald-200"
+              }`}
             title="Ubah pratinjau antara mode hitung mundur terkunci vs mode kado terbuka"
           >
             {adminBypass ? (
@@ -218,11 +217,10 @@ export default function IntroCountdownTrollPage() {
         {/* Tombol Login Admin */}
         <button
           onClick={handleAdminToggleClick}
-          className={`p-2 rounded-full transition-all cursor-pointer ${
-            isAdmin
-              ? "bg-rose-100 text-rose-600 border border-rose-200"
-              : "bg-white/80 text-slate-500 hover:text-slate-700 border border-slate-200/80 shadow-xs"
-          }`}
+          className={`p-2 rounded-full transition-all cursor-pointer ${isAdmin
+            ? "bg-rose-100 text-rose-600 border border-rose-200"
+            : "bg-white/80 text-slate-500 hover:text-slate-700 border border-slate-200/80 shadow-xs"
+            }`}
           title={isAdmin ? "Keluar Mode Admin" : "Masuk Mode Admin (Pembuat Kado)"}
         >
           {isAdmin ? <Unlock size={15} /> : <Lock size={15} />}
@@ -312,15 +310,8 @@ export default function IntroCountdownTrollPage() {
                 {formattedTarget}
               </span>
               <p className="text-[10px] text-slate-500 mt-0.5 font-light">
-                Tunggu sampai hitungan mundur selesai ya, jangan curang! 🤍
+                Tunggu sampai hitungan mundur selesai ya boskuuuu hehehehe
               </p>
-            </div>
-
-            {/* Bottom Tag */}
-            <div className="mt-5 pt-3 border-t border-amber-200/60 w-full text-center">
-              <span className="text-[10px] sm:text-[11px] font-mono text-amber-800/70">
-                Special Birthday Gift for {data.partnerName} ✦ 2026
-              </span>
             </div>
           </motion.div>
         ) : (
