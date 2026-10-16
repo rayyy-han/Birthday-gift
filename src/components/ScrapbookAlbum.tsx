@@ -17,6 +17,7 @@ import {
   Cloud,
   HelpCircle,
   Sparkles,
+  MapPin,
 } from "lucide-react";
 import { useGift } from "@/context/GiftContext";
 import { GalleryPhoto } from "@/data/giftData";
@@ -204,17 +205,25 @@ function PhotoTile({
             {photo.caption}
           </p>
           {(photo.date || photo.location) && (
-            <p
-              style={{
-                fontFamily: "monospace",
-                fontSize: "8px",
-                color: "#9ca3af",
-                letterSpacing: "0.08em",
-                marginTop: 1,
-              }}
-            >
-              {[photo.date, photo.location].filter(Boolean).join(" • ")}
-            </p>
+            <div className="flex items-center justify-center mt-1">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-rose-50/95 via-amber-50/85 to-rose-50/95 border border-rose-200/80 text-[8.5px] sm:text-[9px] font-medium text-rose-900/90 shadow-2xs max-w-full">
+                {photo.date && (
+                  <span className="inline-flex items-center gap-0.5 shrink-0 truncate max-w-[120px]">
+                    <MapPin size={8.5} className="text-rose-500 shrink-0" />
+                    <span className="truncate">{photo.date}</span>
+                  </span>
+                )}
+                {photo.date && photo.location && (
+                  <span className="text-rose-300 font-bold shrink-0 text-[7px]">•</span>
+                )}
+                {photo.location && (
+                  <span className="inline-flex items-center gap-0.5 shrink-0 truncate max-w-[120px]">
+                    <Heart size={7.5} className="fill-rose-400 text-rose-400 shrink-0" />
+                    <span className="truncate text-rose-700/80">{photo.location}</span>
+                  </span>
+                )}
+              </span>
+            </div>
           )}
         </div>
       </div>
@@ -1455,11 +1464,25 @@ create policy "Public delete" on birthday_photos for delete using (true);`;
                   {previewPhoto.caption}
                 </p>
                 {(previewPhoto.date || previewPhoto.location) && (
-                  <p className="text-xs text-rose-600 font-medium mt-1">
-                    {[previewPhoto.date, previewPhoto.location]
-                      .filter(Boolean)
-                      .join(" • ")}
-                  </p>
+                  <div className="flex items-center justify-center mt-2">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-rose-50 via-amber-50 to-rose-50 border border-rose-200 text-xs font-medium text-rose-900 shadow-2xs">
+                      {previewPhoto.date && (
+                        <span className="inline-flex items-center gap-1">
+                          <MapPin size={11} className="text-rose-500" />
+                          {previewPhoto.date}
+                        </span>
+                      )}
+                      {previewPhoto.date && previewPhoto.location && (
+                        <span className="text-rose-300 font-bold text-[9px]">•</span>
+                      )}
+                      {previewPhoto.location && (
+                        <span className="inline-flex items-center gap-1 text-rose-700">
+                          <Heart size={10} className="fill-rose-400 text-rose-400" />
+                          {previewPhoto.location}
+                        </span>
+                      )}
+                    </span>
+                  </div>
                 )}
               </div>
             </motion.div>
