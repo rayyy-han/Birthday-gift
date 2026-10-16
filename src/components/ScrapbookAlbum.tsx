@@ -89,15 +89,17 @@ function PhotoTile({
   layout,
   tapeStyle,
   rotation,
+  onPhotoClick,
 }: {
   photo: GalleryPhoto;
   layout: { x: number; y: number; w: number; h: number };
   tapeStyle: string;
   rotation: number;
+  onPhotoClick?: (photo: GalleryPhoto) => void;
 }) {
   return (
     <div
-      className="absolute"
+      className="absolute group"
       style={{
         left: `${layout.x}%`,
         top: `${layout.y}%`,
@@ -109,7 +111,7 @@ function PhotoTile({
     >
       {/* Washi tape */}
       <div
-        className={`washi-tape ${tapeStyle} w-16 z-10`}
+        className={`washi-tape ${tapeStyle} w-16 z-10 pointer-events-none`}
         style={{
           position: "absolute",
           top: -8,
@@ -117,36 +119,74 @@ function PhotoTile({
           transform: "translateX(-50%)",
         }}
       />
-      {/* Polaroid */}
+      {/* Polaroid Frame */}
       <div
+        onClick={(e) => {
+          e.stopPropagation();
+          onPhotoClick?.(photo);
+        }}
         style={{
           background: "#ffffff",
           width: "100%",
           height: "100%",
-          padding: "8px 8px 18px 8px",
+          padding: "7px 7px 14px 7px",
           display: "flex",
           flexDirection: "column",
-          boxShadow: "0 6px 18px -4px rgba(60,30,10,0.18), 0 2px 6px rgba(0,0,0,0.05)",
+          boxShadow:
+            "0 6px 18px -4px rgba(60,30,10,0.18), 0 2px 6px rgba(0,0,0,0.05)",
           borderRadius: 2,
+          cursor: onPhotoClick ? "pointer" : "default",
+          transition: "transform 0.2s ease, box-shadow 0.2s ease",
         }}
       >
-        {/* Image */}
+        {/* Photo Container: Ambient blur + 100% visible centered image */}
         <div
           style={{
             flex: 1,
             overflow: "hidden",
-            background: "#f0ebe3",
+            background: "#efebe4",
             borderRadius: 1,
+            position: "relative",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
+          {/* Ambient blurred backdrop so any empty margins look natural and warm */}
+          <img
+            src={photo.url}
+            alt=""
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              inset: "-16px",
+              width: "calc(100% + 32px)",
+              height: "calc(100% + 32px)",
+              objectFit: "cover",
+              filter: "blur(14px) brightness(0.85)",
+              transform: "scale(1.2)",
+              pointerEvents: "none",
+            }}
+          />
+          {/* Main Photo: 100% full view, perfectly centered, no face cropped! */}
           <img
             src={photo.url}
             alt={photo.caption}
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            style={{
+              position: "relative",
+              maxWidth: "100%",
+              maxHeight: "100%",
+              width: "auto",
+              height: "auto",
+              objectFit: "contain",
+              zIndex: 2,
+              borderRadius: 1,
+              boxShadow: "0 2px 8px rgba(0,0,0,0.22)",
+            }}
             draggable={false}
           />
         </div>
-        {/* Caption — Font elegan serif (tidak sambung) */}
+        {/* Caption */}
         <div style={{ textAlign: "center", marginTop: 4, paddingBottom: 1 }}>
           <p
             style={{
@@ -163,7 +203,7 @@ function PhotoTile({
           >
             {photo.caption}
           </p>
-          {photo.date && (
+          {(photo.date || photo.location) && (
             <p
               style={{
                 fontFamily: "monospace",
@@ -173,7 +213,7 @@ function PhotoTile({
                 marginTop: 1,
               }}
             >
-              {photo.date}
+              {[photo.date, photo.location].filter(Boolean).join(" • ")}
             </p>
           )}
         </div>
@@ -189,12 +229,14 @@ function PageContent({
   bgVariant,
   isRight,
   pageNum,
+  onPhotoClick,
 }: {
   photos: GalleryPhoto[];
   seed: number;
   bgVariant: "lined" | "grid" | "dots";
   isRight?: boolean;
   pageNum: number;
+  onPhotoClick?: (photo: GalleryPhoto) => void;
 }) {
   const layoutSet =
     photos.length === 0
@@ -274,6 +316,7 @@ function PageContent({
               layout={layout}
               tapeStyle={tape}
               rotation={rot}
+              onPhotoClick={onPhotoClick}
             />
           );
         })
@@ -532,6 +575,7 @@ export default function ScrapbookAlbum() {
   const [showSupabaseGuide, setShowSupabaseGuide] = useState(false);
   const [copiedSql, setCopiedSql] = useState(false);
   const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+  const [previewPhoto, setPreviewPhoto] = useState<GalleryPhoto | null>(null);
 
   // ── Pages Model ──────────────────────────────────────────────────────────────
   const contentFaceCount = Math.max(1, Math.ceil(photos.length / PHOTOS_PER_PAGE));
@@ -574,6 +618,7 @@ export default function ScrapbookAlbum() {
               seed={0}
               bgVariant="lined"
               pageNum={1}
+              onPhotoClick={setPreviewPhoto}
             />
           ),
           zBase: pageCountDesktop,
@@ -587,6 +632,7 @@ export default function ScrapbookAlbum() {
               seed={lastFaceIndex}
               bgVariant={bgVariants[lastFaceIndex % bgVariants.length]}
               pageNum={lastFaceIndex * 2}
+              onPhotoClick={setPreviewPhoto}
             />
           ),
           back: <BackCoverContent partnerName={data.partnerName} />,
@@ -602,6 +648,7 @@ export default function ScrapbookAlbum() {
               seed={frontFace}
               bgVariant={bgVariants[frontFace % bgVariants.length]}
               pageNum={frontFace * 2 + 1}
+              onPhotoClick={setPreviewPhoto}
             />
           ),
           back: (
@@ -611,6 +658,7 @@ export default function ScrapbookAlbum() {
               bgVariant={bgVariants[backFace % bgVariants.length]}
               isRight
               pageNum={backFace * 2}
+              onPhotoClick={setPreviewPhoto}
             />
           ),
           zBase: pageCountDesktop - i,
@@ -968,6 +1016,7 @@ create policy "Public delete" on birthday_photos for delete using (true);`;
                         bgVariants[(mobilePage - 1) % bgVariants.length]
                       }
                       pageNum={mobilePage}
+                      onPhotoClick={setPreviewPhoto}
                     />
                   )}
                 </motion.div>
@@ -1030,6 +1079,12 @@ create policy "Public delete" on birthday_photos for delete using (true);`;
               width: "min(360px, 94vw)",
               height: "min(500px, 130vw)",
               perspective: "1500px",
+              transform:
+                flipCount > 0 && flipCount < desktopPages.length
+                  ? "translateX(min(180px, 24vw))"
+                  : "translateX(0px)",
+              transition:
+                "transform 0.72s cubic-bezier(0.645, 0.045, 0.355, 1.000)",
             }}
             ref={bookRef}
           >
@@ -1068,6 +1123,9 @@ create policy "Public delete" on birthday_photos for delete using (true);`;
               {/* Flip Pages */}
               {desktopPages.map((page, i) => {
                 const isFlipped = flipCount > i;
+                const isTopLeft = flipCount > 0 && i === flipCount - 1;
+                const isTopRight = i === flipCount;
+                const isInteractive = isTopLeft || isTopRight;
                 const zIndex = isFlipped
                   ? i + 1
                   : pageCountDesktop - i + 1;
@@ -1087,6 +1145,7 @@ create policy "Public delete" on birthday_photos for delete using (true);`;
                         "transform 0.72s cubic-bezier(0.645, 0.045, 0.355, 1.000)",
                       cursor:
                         i === 0 && flipCount === 0 ? "pointer" : "default",
+                      pointerEvents: isInteractive ? "auto" : "none",
                     }}
                     onClick={() => {
                       if (i === 0 && flipCount === 0) doFlip("next");
@@ -1098,6 +1157,7 @@ create policy "Public delete" on birthday_photos for delete using (true);`;
                       style={{
                         backfaceVisibility: "hidden",
                         WebkitBackfaceVisibility: "hidden",
+                        pointerEvents: !isFlipped && isTopRight ? "auto" : "none",
                         boxShadow:
                           i === 0 && flipCount === 0
                             ? "0 22px 55px -10px rgba(80,40,10,0.38), 0 6px 18px rgba(0,0,0,0.15)"
@@ -1123,6 +1183,7 @@ create policy "Public delete" on birthday_photos for delete using (true);`;
                         backfaceVisibility: "hidden",
                         WebkitBackfaceVisibility: "hidden",
                         transform: "rotateY(180deg)",
+                        pointerEvents: isFlipped && isTopLeft ? "auto" : "none",
                         boxShadow: "inset 3px 0 12px rgba(0,0,0,0.06)",
                         borderLeft: "1px solid rgba(195,160,110,0.25)",
                       }}
@@ -1355,6 +1416,56 @@ create policy "Public delete" on birthday_photos for delete using (true);`;
           </motion.div>
         </div>
       )}
+
+      {/* ── Photo Preview Lightbox Modal ── */}
+      <AnimatePresence>
+        {previewPhoto && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+            onClick={() => setPreviewPhoto(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 15 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 15 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative max-w-sm w-full bg-white p-4 sm:p-5 rounded-2xl shadow-2xl flex flex-col items-center"
+            >
+              <button
+                onClick={() => setPreviewPhoto(null)}
+                className="absolute -top-3 -right-3 w-9 h-9 rounded-full bg-slate-800 text-white flex items-center justify-center hover:bg-slate-700 shadow-lg cursor-pointer z-10"
+                aria-label="Tutup"
+              >
+                <X size={18} />
+              </button>
+
+              <div className="w-full rounded-xl overflow-hidden bg-slate-100 flex items-center justify-center max-h-[70vh]">
+                <img
+                  src={previewPhoto.url}
+                  alt={previewPhoto.caption}
+                  className="w-full h-auto max-h-[70vh] object-contain rounded-lg shadow-sm"
+                />
+              </div>
+
+              <div className="text-center mt-3.5">
+                <p className="font-serif-title font-medium text-slate-800 text-base sm:text-lg">
+                  {previewPhoto.caption}
+                </p>
+                {(previewPhoto.date || previewPhoto.location) && (
+                  <p className="text-xs text-rose-600 font-medium mt-1">
+                    {[previewPhoto.date, previewPhoto.location]
+                      .filter(Boolean)
+                      .join(" • ")}
+                  </p>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
