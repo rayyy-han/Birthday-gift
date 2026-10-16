@@ -312,10 +312,9 @@ export default function HeroCake() {
                 Lilin Telah Ditiup! ✨
               </h3>
 
-              <div className="lined-paper p-5 my-4 rounded-xl border border-pink-200/80 text-left shadow-sm">
-                <p className="font-cursive text-sm sm:text-base text-[#4a1830] leading-relaxed">
-                  "Semoga usiamu yang baru diliputi keberkahan tiada henti, kesehatan yang prima, kebahagiaan sejati,
-                  dan kemudahan di setiap langkah impianmu. Aku selalu ada untukmu."
+              <div className="lined-paper p-5 my-4 rounded-xl border border-pink-200/80 text-center shadow-sm">
+                <p className="font-cursive text-base sm:text-lg text-[#4a1830] leading-relaxed">
+                  &ldquo;Yeayy kumaa Sudah berumur 21 tahun&rdquo;
                 </p>
               </div>
 
