@@ -7,21 +7,6 @@ export interface GalleryPhoto {
   rotation?: number;
 }
 
-export interface LoveReason {
-  id: number;
-  title: string;
-  description: string;
-  highlight: string;
-  photo?: string;
-}
-
-export interface SpecialWish {
-  id: string;
-  sender: string;
-  message: string;
-  tag: string;
-}
-
 export interface BirthdayGiftConfig {
   partnerName: string;
   birthdayDate: string;
@@ -29,8 +14,11 @@ export interface BirthdayGiftConfig {
   heroSubtext: string;
   loveLetter: string;
   photos: GalleryPhoto[];
-  reasons: LoveReason[];
-  wishes: SpecialWish[];
   customMusicName?: string;
   customMusicData?: string;
+  trollTitle?: string;
+  trollOption1?: string;
+  trollOption2?: string;
+  trollSubtitle?: string;
+  countdownTarget?: string;
 }

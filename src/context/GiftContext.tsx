@@ -118,8 +118,6 @@ export function GiftProvider({ children }: { children: React.ReactNode }) {
     INITIAL_GIFT_DATA.partnerName,
     INITIAL_GIFT_DATA.birthdayDate,
     INITIAL_GIFT_DATA.loveLetter,
-    INITIAL_GIFT_DATA.reasons,
-    INITIAL_GIFT_DATA.wishes,
   ]);
 
   const updateData = (newData: Partial<BirthdayGiftConfig>) => {

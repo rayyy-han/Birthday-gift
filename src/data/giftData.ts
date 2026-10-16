@@ -7,21 +7,6 @@ export interface GalleryPhoto {
   rotation?: number;
 }
 
-export interface LoveReason {
-  id: number;
-  title: string;
-  description: string;
-  highlight: string;
-  photo?: string; // base64 or url – can be replaced manually by creator
-}
-
-export interface SpecialWish {
-  id: string;
-  sender: string;
-  message: string;
-  tag: string;
-}
-
 export interface BirthdayGiftConfig {
   partnerName: string;
   birthdayDate: string;
@@ -29,8 +14,6 @@ export interface BirthdayGiftConfig {
   heroSubtext: string;
   loveLetter: string;
   photos: GalleryPhoto[];
-  reasons: LoveReason[];
-  wishes: SpecialWish[];
   customMusicName?: string;  // display name of the uploaded song
   customMusicData?: string;  // base64 audio data
   trollTitle: string;
@@ -51,13 +34,14 @@ export const INITIAL_GIFT_DATA: BirthdayGiftConfig = {
   trollOption1: "Kuma Cantik",
   trollOption2: "Kuma Botak",
   trollSubtitle: "Sebelum membuka isi nya, Kuma harus pilih dulu:",
-  loveLetter: `Selamat ulang tahun.
+  loveLetter: `Selamat ulang tahun Sayangggku.
 
-Di hari yang istimewa ini, aku hanya ingin menyampaikan betapa berartinya kehadiranmu dalam hidupku. Setiap momen bersamamu selalu menghadirkan ketenangan, senyuman hangat, dan rasa syukur yang luar biasa.
+Selamat Ulang tahunnn Kumaa cantikk, Yeayyy sekarangg kamu sudahh 21 Tahunn aja yaa gakk kerasaaa yaaa kamu udah berkembang dan jadii keikoo yangg aku kenall sampe sekarang.
 
-Terima kasih sudah menjadi sosok yang penyabar, penuh kasih, dan senantiasa melengkapi hari-hariku.
+Di umur yang sudah bukan anak anak ini lagi, kamu udah hebat sampai sejauh ini untuk bertahann dari apapun, akuu banggaa dari semua proses yang kamu tunjukin sama aku selama ini.
 
-Semoga di usiamu yang baru ini, langkahmu senantiasa diliputi kebahagiaan, kesehatan, dan kemudahan dalam meraih setiap hal yang kamu cita-citakan. Aku akan selalu ada di sini untuk mendampingi dan mendukung perjalananmu.
+Doa aku untuk Hari yang spesial kamu kali ini adalah kamu selalu diberi Kesehatan, Jasmani dan Rohani, tetap jadii keikoo yang aku kenall selama ini, di limpahkan rezekii nya karena kamu baik banget sama aku dari materi dan waktu yang kamu kasih buat aku, Dilancarin segala urusan kamu untuk kamu ngelangkah lebih jauhh lagi :), Aku gak pintar buat ngasih kata kata, tapi intinya aku mau merayakan hari spesial kamu ini.
+
 
 Selamat ulang tahun, kesayanganku.`,
   photos: [
@@ -81,101 +65,41 @@ Selamat ulang tahun, kesayanganku.`,
       id: "photo-3",
       url: "/images/foto3.png",
       caption: "Kembaran : Kuma & bonekanya 🐷",
-      date: "Oh some",
-      location: "Toko Lucu",
+      date: "Oh Some",
+      location: "Jalan Berdua",
       rotation: -2,
     },
     {
       id: "photo-5",
       url: "/images/foto5.png",
       caption: "Kuma & pasukan kucing santai 🐱",
-      date: "Momen Santai",
-      location: "Taman",
+      date: "Perpustakaan UI",
+      location: "Momen Santai",
       rotation: -1,
     },
     {
       id: "photo-6",
       url: "/images/foto6.png",
-      caption: "Maskeran muka hijau tetap paling gemas 🥑",
-      date: "Momen Kocak",
-      location: "Me Time",
+      caption: "Maskeran muka hijau seperti Hulk 🥑",
+      date: "Rumah",
+      location: "Selfie",
       rotation: 2.5,
     },
     {
       id: "photo-7",
       url: "/images/foto7.png",
-      caption: "Makan katsu enak bareng senyuman termanis 🍱",
-      date: "Kencan Enak",
-      location: "Zenbu",
+      caption: "Makan Kimukatsu 🍱",
+      date: "Margo City",
+      location: "Mam Bareng",
       rotation: -1.5,
     },
     {
       id: "photo-8",
       url: "/images/foto8.png",
-      caption: "Pepper Lunch hangat & tatapan mata berbinar 🍚✨",
-      date: "Kencan Kuliner",
-      location: "Food Court",
+      caption: "Pepper Lunch yang mantap🍚✨",
+      date: "Mam Bareng",
+      location: "Margo City",
       rotation: 2,
-    },
-  ],
-  reasons: [
-    {
-      id: 1,
-      title: "Kehangatan Senyumanmu",
-      description:
-        "Caramu tersenyum selalu memberikan ketenangan dan mencerahkan hari yang paling melelahkan sekalipun.",
-      highlight: "Ketulusan yang selalu menenangkan",
-    },
-    {
-      id: 2,
-      title: "Ketulusan Perhatianmu",
-      description:
-        "Perhatian kecil dan kesabaranmu dalam mendengarkan selalu membuatku merasa sangat dihargai.",
-      highlight: "Pendengar terbaik dalam setiap cerita",
-    },
-    {
-      id: 3,
-      title: "Momen Sederhana Bersama",
-      description:
-        "Menghabiskan waktu bersama, berdiskusi santai, atau sekadar berbagi tawa adalah hal favoritku.",
-      highlight: "Kebersamaan yang penuh kehangatan",
-    },
-    {
-      id: 4,
-      title: "Kedewasaan & Kesabaran",
-      description:
-        "Sikapmu yang senantiasa tenang dan bijaksana membawa kedamaian di setiap situasi.",
-      highlight: "Pribadi yang menginspirasi",
-    },
-    {
-      id: 5,
-      title: "Semangat Mengejar Cita-Cita",
-      description:
-        "Gigih dan fokusmu dalam meraih impian selalu membuatku bangga dan ingin terus mendukungmu.",
-      highlight: "Perjuangan yang selalu kubanggakan",
-    },
-    {
-      id: 6,
-      title: "Kehadiran yang Melengkapi",
-      description:
-        "Bersamamu, aku merasa menjadi pribadi yang lebih baik dan senantiasa bersyukur.",
-      highlight: "Rumah bagi rasa nyaman",
-    },
-  ],
-  wishes: [
-    {
-      id: "wish-1",
-      sender: "Dengan Seluruh Kasih",
-      message:
-        "Semoga usiamu yang baru dilimpahi kebahagiaan sejati, kesehatan yang prima, dan kedamaian di setiap langkahmu.",
-      tag: "Doa Utama",
-    },
-    {
-      id: "wish-2",
-      sender: "Pendamping Perjalananmu",
-      message:
-        "Semoga semua impian indah yang sedang kamu perjuangkan perlahan terwujud dengan hasil terbaik.",
-      tag: "Harapan Indah",
     },
   ],
 };
